@@ -24,7 +24,7 @@ const weatherStore = useWeatherStore();
 
 var editLocation = ref(false);
 const locationField = ref();
-const apiUrl = 'https://localhost:32760/api';
+const apiUrl = 'https://localhost:7167/api';
 
 
 class WeatherData {
@@ -63,11 +63,8 @@ class WeatherData {
 async function main(){
     
     const date: string = getDate(day.value);
-    
-    console.log(date);
-    console.log(day);
 
-    const res = await axios.get(`${apiUrl}/weatherdata/${date}`);
+    const res = await axios.get(`${apiUrl}/weatherdata/stockholm/${date}`);
     
     Object.assign(weatherData,
     new WeatherData(

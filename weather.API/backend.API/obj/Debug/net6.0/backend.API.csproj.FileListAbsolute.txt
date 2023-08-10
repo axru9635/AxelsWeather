@@ -38,3 +38,5 @@ C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\obj\Debug\net6.0\
 C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\bin\Debug\net6.0\myJson.json
 C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\bin\Debug\net6.0\RawWeatherData.json
 C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\obj\Debug\net6.0\backend.API.Properties.Resources.resources
+C:\Users\axel.rudling\code\weather_app\weather.API\backend.API\obj\Debug\net6.0\backend.API.csproj.GenerateResource.cache

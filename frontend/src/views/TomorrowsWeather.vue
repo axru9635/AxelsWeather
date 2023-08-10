@@ -7,7 +7,8 @@ var weatherData = reactive({}) as WeatherData;
 
 var editLocation = ref(false);
 const locationField = ref();
-const apiUrl = 'https://localhost:32760/api';
+//const apiUrl = 'https://localhost:32760/api';
+const apiUrl = 'https://localhost:7167/api';
 
 const iconsPath = "src/assets/weather-icons/"
 
