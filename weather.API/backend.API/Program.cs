@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,44 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod();
                       });
 });
+
+
+builder.Services.AddRateLimiter(_ => _
+    .GlobalLimiter = PartitionedRateLimiter.CreateChained(
+        PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        {
+            var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+
+            return RateLimitPartition.GetSlidingWindowLimiter
+            (userAgent, _ =>
+                new SlidingWindowRateLimiterOptions
+                {
+                    //AutoReplenishment = true,  ?? what is this?
+                    PermitLimit = 3,
+                    SegmentsPerWindow = 100,
+                    Window = TimeSpan.FromSeconds(60),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 5
+                });
+        }),
+        PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        {
+            var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+
+            return RateLimitPartition.GetFixedWindowLimiter
+            (userAgent, _ =>
+                new FixedWindowRateLimiterOptions
+                {
+                    //AutoReplenishment = true,  ?? what is this?
+                    PermitLimit = 1000,
+                    Window = TimeSpan.FromDays(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 5
+                });
+        })
+
+    ));
+
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -33,14 +74,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
 app.UseStaticFiles();
 
 app.UseCors(myAllowSpecificOrigins);
 
-app.UseAuthorization();
+app.UseRateLimiter();
 
-app.MapControllers();
+
 
 app.Run();

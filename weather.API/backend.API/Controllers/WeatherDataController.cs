@@ -1,6 +1,10 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Timers;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using Microsoft.AspNetCore.RateLimiting;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,34 +19,61 @@ namespace backend.API.Controllers
 
         private IWebHostEnvironment _hostEnvironment;
 
-        private IDictionary<string, DateTime> ApiCallCache =  new Dictionary<string,DateTime>();
+        private IDictionary<string, WeatherData> ApiCallCache =  new Dictionary<string, WeatherData>();
 
         string ApiKey = Environment.GetEnvironmentVariable("API_KEY_OPENWEATHERMAP");
 
+
         public WeatherDataController(IWebHostEnvironment environment)
         {
+            // Remeber the controller is not created until you call it!!
             _hostEnvironment = environment;
+            
         }
 
         [HttpGet("{city}/{date}")]
-        public async Task<WeatherData> Get(string city,DateTime date)
+        public async Task<WeatherData> Get(string city, DateTime date) // can I return a http request instead
         {
-            Console.WriteLine($"{city} {date}");
-            HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/geo/1.0/direct?q={city},SE&limit=1&appid={ApiKey}");
-            var rawCityDataJson = await response.Content.ReadAsStringAsync();
+        
+            var ( latitiude, logitude) = await GetGeoCoordsFromAPI(city);
 
-            dynamic rawCityData = JsonConvert.DeserializeObject(rawWeatherDataJson);
-
-            int latitude = rawCityData.lat; int logitude = rawCityData.lon;
-
-            dynamic rawWeatherData = await GetWeatherDataFromAPI(latitude, logitude);
+            dynamic rawWeatherData = await GetWeatherDataFromAPI(latitiude, logitude);
 
             WeatherData weatherData = extractDesieredSubset(rawWeatherData, date);
 
             return weatherData;
+            
         }
 
-        async private Task<dynamic> GetWeatherDataFromAPI(int latitude,int logitude)
+        async private Task<(double,double)> GetGeoCoordsFromAPI(string city)
+        {
+
+            HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/geo/1.0/direct?q={city},SE&limit=1&appid={ApiKey}");
+            var rawCityDataJson = await response.Content.ReadAsStringAsync();
+
+            dynamic rawCityData = JsonConvert.DeserializeObject(rawCityDataJson);
+
+            return ((double)rawCityData[0].lat, (double)rawCityData[0].lon);
+
+        }
+
+        //async private Task< IDictionary<string, double> > GetGeoCoordsFromAPI() {
+
+        //    HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/geo/1.0/direct?q={city},SE&limit=1&appid={ApiKey}");
+        //    var rawCityDataJson = await response.Content.ReadAsStringAsync();
+
+        //    dynamic rawCityData = JsonConvert.DeserializeObject(rawCityDataJson);
+
+        //    IDictionary<string, string> geoCoords = new 
+        //        Dictionary<string, double> { 
+        //        { "latitiude", (double)rawCityData[0].lat }, 
+        //        { "longitdute", (double)rawCityData[0].lon } };
+
+        //    return geoCoords;
+
+        //}
+
+        async private Task<dynamic> GetWeatherDataFromAPI(double latitude, double logitude)
         {
             var useAPI = false;
             var writeRawWeatherJson = false;
@@ -111,22 +142,7 @@ namespace backend.API.Controllers
             return weatherData;
         }
         
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        
+        
     }
 }
