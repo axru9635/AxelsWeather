@@ -1,7 +1,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 
-import WeatherOfTheDay from '../views/WeatherOfTheDay.vue' // '../views/TodaysWeather.vue'
+import WeatherOfTheDay from '../views/WeatherOfTheDay.vue' 
 //import TomorrowsWeather from '../views/TomorrowsWeather.vue'
 
 const router = createRouter({
