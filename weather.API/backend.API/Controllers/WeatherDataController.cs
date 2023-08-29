@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Timers;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using Microsoft.AspNetCore.RateLimiting;
+//using System.Diagnostics;
+//using System.Timers;
+//using System.Diagnostics;
+//using System.Diagnostics.Metrics;
+//using Microsoft.AspNetCore.RateLimiting;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 
 namespace backend.API.Controllers
 {
@@ -32,7 +32,7 @@ namespace backend.API.Controllers
         }
 
         [HttpGet("{city}/{date}")]
-        public async Task<WeatherData> Get(string city, DateTime date) // can I return a http request instead
+        public async Task<WeatherData> Get(string city, DateTime date) // can I return a http request instead?
         {
         
             var ( latitiude, logitude) = await GetGeoCoordsFromAPI(city);
@@ -56,22 +56,6 @@ namespace backend.API.Controllers
             return ((double)rawCityData[0].lat, (double)rawCityData[0].lon);
 
         }
-
-        //async private Task< IDictionary<string, double> > GetGeoCoordsFromAPI() {
-
-        //    HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/geo/1.0/direct?q={city},SE&limit=1&appid={ApiKey}");
-        //    var rawCityDataJson = await response.Content.ReadAsStringAsync();
-
-        //    dynamic rawCityData = JsonConvert.DeserializeObject(rawCityDataJson);
-
-        //    IDictionary<string, string> geoCoords = new 
-        //        Dictionary<string, double> { 
-        //        { "latitiude", (double)rawCityData[0].lat }, 
-        //        { "longitdute", (double)rawCityData[0].lon } };
-
-        //    return geoCoords;
-
-        //}
 
         async private Task<dynamic> GetWeatherDataFromAPI(double latitude, double logitude)
         {
@@ -112,9 +96,6 @@ namespace backend.API.Controllers
             DateTime date = DateTime.Now.Date;
             
             var dailyIndex = (dateDesieredForecast - date).Days;
-
-            //DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            //DateTime date = dtDateTime.AddSeconds((double)rawWeatherData.current.dt);
 
             string mainWeatherTag = rawWeatherData.daily[dailyIndex].weather[0].main;
             string summary = rawWeatherData.daily[dailyIndex].summary;

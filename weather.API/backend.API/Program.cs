@@ -29,11 +29,11 @@ builder.Services.AddRateLimiter(_ => _
                 new SlidingWindowRateLimiterOptions
                 {
                     //AutoReplenishment = true,  ?? what is this?
-                    PermitLimit = 3,
+                    PermitLimit = 60,
                     SegmentsPerWindow = 100,
                     Window = TimeSpan.FromSeconds(60),
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                    QueueLimit = 5
+                    QueueLimit = 10
                 });
         }),
         PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
@@ -48,7 +48,7 @@ builder.Services.AddRateLimiter(_ => _
                     PermitLimit = 1000,
                     Window = TimeSpan.FromDays(1),
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                    QueueLimit = 5
+                    QueueLimit = 10
                 });
         })
 
