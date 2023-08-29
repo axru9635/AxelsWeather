@@ -79,10 +79,6 @@ async function main(){
     
 }
 
-function increment(){
-    weatherStore.count+=1;
-}
-
 
 function getDate( day: string){
 
